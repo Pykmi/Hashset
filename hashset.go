@@ -7,23 +7,42 @@ import (
 	"errors"
 )
 
+const error_duplicate = "Cannot store duplicate values"
+
 type HashsetMap map[interface{}]struct{}
 
 type Hashset struct {
 	set HashsetMap
 }
 
-func (h *Hashset) Add(ob interface{}) {
+func (h *Hashset) add(ob interface{}) error {
 	hash, err := hash(ob)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	if h.contains(hash) {
-		panic(err.Error())
+		return errors.New(error_duplicate)
 	}
 
 	h.set[hash] = struct{}{}
+	return nil
+}
+
+func (h *Hashset) Add(ob interface{}) {
+	err := h.add(ob)
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+func (h *Hashset) AddAll(obs ...interface{}) {
+	for _, ob := range obs {
+		err := h.add(ob)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
 }
 
 func (h *Hashset) Contains(ob interface{}) bool {
@@ -64,7 +83,7 @@ func New(values ...interface{}) *Hashset {
 		}
 
 		if internal.contains(hash) {
-			panic(errors.New("Cannot store duplicate values"))
+			panic(errors.New(error_duplicate))
 		}
 
 		internal.set[hash] = struct{}{}
