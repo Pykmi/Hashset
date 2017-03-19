@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/gob"
+	"errors"
 )
 
 type HashsetMap map[interface{}]struct{}
@@ -18,6 +19,10 @@ func (h *Hashset) Contains(ob interface{}) bool {
 		panic(err.Error())
 	}
 
+	return h.contains(hash)
+}
+
+func (h *Hashset) contains(hash string) bool {
 	if _, ok := h.set[hash]; ok {
 		return true
 	}
@@ -43,6 +48,10 @@ func New(values ...interface{}) *Hashset {
 		hash, err := hash(value)
 		if err != nil {
 			panic(err.Error())
+		}
+
+		if internal.contains(hash) {
+			panic(errors.New("Cannot store duplicate values"))
 		}
 
 		internal.set[hash] = struct{}{}
