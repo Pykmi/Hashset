@@ -13,6 +13,19 @@ type Hashset struct {
 	set HashsetMap
 }
 
+func (h *Hashset) Add(ob interface{}) {
+	hash, err := hash(ob)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if h.contains(hash) {
+		panic(err.Error())
+	}
+
+	h.set[hash] = struct{}{}
+}
+
 func (h *Hashset) Contains(ob interface{}) bool {
 	hash, err := hash(ob)
 	if err != nil {
