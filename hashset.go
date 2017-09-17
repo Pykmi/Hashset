@@ -1,4 +1,4 @@
-package hashset
+package Hashset
 
 import (
 	"bytes"
